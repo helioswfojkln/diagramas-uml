@@ -291,9 +291,11 @@ end
         <p>Gerado com PlantUML</p>
     </footer>
 
-    <script>
-        const diagramas = {
-            cadastro: `@startuml
+  <script src="https://cdn.jsdelivr.net/npm/plantuml-encoder/dist/plantuml-encoder.min.js"></script>
+
+<script>
+    const diagramas = {
+        cadastro: `@startuml
 actor Usuário
 participant "Interface Web" as UI
 participant "Controlador" as Controller
@@ -340,8 +342,8 @@ else Dados válidos
     end
 end
 @enduml`,
-            
-            pedido: `@startuml
+        
+        pedido: `@startuml
 actor Cliente
 participant "App Mobile" as App
 participant "API Gateway" as Gateway
@@ -411,40 +413,39 @@ else Restaurante disponível
     end
 end
 @enduml`
+    };
+
+    function showDiagram(tipo) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        document.querySelectorAll('.diagram-section').forEach(s => s.classList.remove('active'));
+        document.getElementById(tipo).classList.add('active');
+        
+        const img = document.getElementById(`diagram-${tipo}`);
+        if (!img.src) carregarDiagrama(tipo);
+    }
+
+    function carregarDiagrama(tipo) {
+        const img = document.getElementById(`diagram-${tipo}`);
+        const loading = document.getElementById(`loading-${tipo}`);
+
+        const encoded = plantumlEncoder.encode(diagramas[tipo]);
+        img.src = `https://www.plantuml.com/plantuml/png/${encoded}`;
+        
+        img.onload = () => {
+            loading.style.display = 'none';
+            img.style.display = 'block';
         };
+        
+        img.onerror = () => {
+            loading.innerHTML = 'Erro ao carregar diagrama';
+        };
+    }
 
-        function showDiagram(tipo) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            document.querySelectorAll('.diagram-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(tipo).classList.add('active');
-            
-            const img = document.getElementById(`diagram-${tipo}`);
-            if (!img.src) {
-                carregarDiagrama(tipo);
-            }
-        }
-
-        function carregarDiagrama(tipo) {
-            const img = document.getElementById(`diagram-${tipo}`);
-            const loading = document.getElementById(`loading-${tipo}`);
-            
-            img.src = `https://www.plantuml.com/plantuml/png/${encodeURIComponent(diagramas[tipo])}`;
-            
-            img.onload = function() {
-                loading.style.display = 'none';
-                img.style.display = 'block';
-            };
-            
-            img.onerror = function() {
-                loading.innerHTML = 'Erro ao carregar diagrama';
-            };
-        }
-
-        window.addEventListener('DOMContentLoaded', function() {
-            carregarDiagrama('cadastro');
-        });
-    </script>
+    window.addEventListener('DOMContentLoaded', () => {
+        carregarDiagrama('cadastro');
+    });
+</script>
 </body>
 </html>
