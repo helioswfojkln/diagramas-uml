@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagramas UML - Documentação</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            color: #333;
+        }
+
+        h1 {
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .tabs {
+            margin: 20px 0;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .tab {
+            display: inline-block;
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #f5f5f5;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            margin-right: 5px;
+        }
+
+        .tab.active {
+            background: #fff;
+            border-bottom: 2px solid #fff;
+            margin-bottom: -1px;
+        }
+
+        .diagram-section {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .diagram-section.active {
+            display: block;
+        }
+
+        .diagram-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            background: #fafafa;
+        }
+
+        .diagram-container img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        ul {
+            line-height: 1.8;
+        }
+
+        pre {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            padding: 15px;
+            overflow-x: auto;
+            font-size: 13px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Diagramas de Sequência UML</h1>
+    <p>Documentação técnica dos fluxos do sistema</p>
+
+    <div class="tabs">
+        <div class="tab active" onclick="showDiagram('cadastro')">Cadastro de Usuário</div>
+        <div class="tab" onclick="showDiagram('pedido')">Pedido de Comida</div>
+    </div>
+
+    <!-- DIAGRAMA 1 -->
+    <div id="cadastro" class="diagram-section active">
+        <h2>1. Cadastro de Usuário</h2>
+        
+        <div class="diagram-container">
+            <div class="loading" id="loading-cadastro">Carregando diagrama...</div>
+            <img id="diagram-cadastro" style="display:none;" alt="Diagrama - Cadastro">
+        </div>
+
+        <h3>Descrição</h3>
+        <p>Fluxo de cadastro de novo usuário no sistema.</p>
+
+        <h3>Componentes</h3>
+        <ul>
+            <li>Interface Web - Frontend da aplicação</li>
+            <li>Controlador - Recebe e processa requisições</li>
+            <li>Validador - Valida dados de entrada</li>
+            <li>Serviço de Usuário - Lógica de negócio</li>
+            <li>Banco de Dados - Persistência</li>
+        </ul>
+
+        <h3>Fluxos</h3>
+        <ul>
+            <li>Validação de dados do formulário</li>
+            <li>Verificação de email duplicado</li>
+            <li>Criptografia de senha</li>
+            <li>Envio de email de confirmação</li>
+        </ul>
+
+        <h3>Código PlantUML</h3>
+        <pre>@startuml
+actor Usuário
+participant "Interface Web" as UI
+participant "Controlador" as Controller
+participant "Serviço de Usuário" as Service
+participant "Validador" as Validator
+database "Banco de Dados" as DB
+
+Usuário -> UI: Preenche formulário de cadastro
+Usuário -> UI: Clica em "Cadastrar"
+UI -> Controller: enviarCadastro(dados)
+activate Controller
+Controller -> Validator: validarDados(dados)
+activate Validator
+
+alt Dados inválidos
+    Validator --> Controller: Erro de validação
+    Controller --> UI: Retorna mensagens de erro
+    UI --> Usuário: Exibe erros no formulário
+else Dados válidos
+    Validator --> Controller: Dados válidos
+    deactivate Validator
+    Controller -> Service: criarUsuario(dados)
+    activate Service
+    Service -> Service: criptografarSenha()
+    Service -> DB: verificarEmailExistente(email)
+    activate DB
+    
+    alt Email já existe
+        DB --> Service: Email encontrado
+        Service --> Controller: Erro: Email já cadastrado
+        Controller --> UI: Retorna erro
+        UI --> Usuário: Exibe mensagem de erro
+    else Email disponível
+        DB --> Service: Email disponível
+        Service -> DB: inserirUsuario(dados)
+        DB --> Service: Usuário criado com sucesso
+        deactivate DB
+        Service -> Service: enviarEmailConfirmacao()
+        Service --> Controller: Sucesso
+        deactivate Service
+        Controller --> UI: Cadastro realizado
+        deactivate Controller
+        UI --> Usuário: Exibe mensagem de sucesso
+    end
+end
+@enduml</pre>
+    </div>
+
+    <!-- DIAGRAMA 2 -->
+    <div id="pedido" class="diagram-section">
+        <h2>2. Pedido de Comida Online</h2>
+        
+        <div class="diagram-container">
+            <div class="loading" id="loading-pedido">Carregando diagrama...</div>
+            <img id="diagram-pedido" style="display:none;" alt="Diagrama - Pedido">
+        </div>
+
+        <h3>Descrição</h3>
+        <p>Processo completo de realização de pedido em aplicativo de delivery.</p>
+
+        <h3>Componentes</h3>
+        <ul>
+            <li>App Mobile - Interface do cliente</li>
+            <li>API Gateway - Ponto de entrada das requisições</li>
+            <li>Serviço de Pedidos - Gerencia pedidos</li>
+            <li>Serviço de Pagamento - Processa pagamentos</li>
+            <li>Serviço de Restaurante - Gerencia restaurantes</li>
+            <li>Sistema do Restaurante - Interface do estabelecimento</li>
+        </ul>
+
+        <h3>Fluxos</h3>
+        <ul>
+            <li>Seleção de itens e montagem do carrinho</li>
+            <li>Validação de disponibilidade do restaurante</li>
+            <li>Processamento de pagamento</li>
+            <li>Envio de pedido ao restaurante</li>
+            <li>Confirmação e notificação ao cliente</li>
+        </ul>
+
+        <h3>Código PlantUML</h3>
+        <pre>@startuml
+actor Cliente
+participant "App Mobile" as App
+participant "API Gateway" as Gateway
+participant "Serviço de Pedidos" as PedidoService
+participant "Serviço de Pagamento" as PaymentService
+participant "Serviço de Restaurante" as RestauranteService
+database "Banco de Dados" as DB
+participant "Sistema do Restaurante" as SistemaRest
+
+Cliente -> App: Navega no cardápio
+Cliente -> App: Adiciona itens ao carrinho
+Cliente -> App: Finalizar pedido
+activate App
+App -> App: Validar carrinho
+App -> Gateway: solicitarPedido(dadosPedido)
+activate Gateway
+Gateway -> PedidoService: criarPedido(dadosPedido)
+activate PedidoService
+PedidoService -> DB: salvarPedido(pedido)
+activate DB
+DB --> PedidoService: Pedido salvo (ID)
+deactivate DB
+PedidoService -> RestauranteService: verificarDisponibilidade(restauranteId, itens)
+activate RestauranteService
+
+alt Restaurante fechado ou itens indisponíveis
+    RestauranteService --> PedidoService: Erro: Indisponível
+    PedidoService -> DB: atualizarStatus(pedidoId, "CANCELADO")
+    PedidoService --> Gateway: Erro: Pedido não disponível
+    Gateway --> App: Retorna erro
+    App --> Cliente: Exibe mensagem de erro
+else Restaurante disponível
+    RestauranteService --> PedidoService: Disponível
+    deactivate RestauranteService
+    PedidoService -> PaymentService: processarPagamento(pedidoId, valorTotal, metodoPagamento)
+    activate PaymentService
+    PaymentService -> PaymentService: Validar dados de pagamento
+    
+    alt Pagamento recusado
+        PaymentService --> PedidoService: Erro: Pagamento recusado
+        PedidoService -> DB: atualizarStatus(pedidoId, "PAGAMENTO_FALHOU")
+        PedidoService --> Gateway: Erro: Pagamento não autorizado
+        Gateway --> App: Retorna erro de pagamento
+        App --> Cliente: Exibe erro no pagamento
+    else Pagamento aprovado
+        PaymentService --> PedidoService: Pagamento confirmado (transacaoId)
+        deactivate PaymentService
+        PedidoService -> DB: atualizarStatus(pedidoId, "PAGO")
+        PedidoService -> RestauranteService: enviarPedidoRestaurante(pedidoId, detalhes)
+        activate RestauranteService
+        RestauranteService -> SistemaRest: notificarNovoPedido(pedido)
+        activate SistemaRest
+        SistemaRest --> RestauranteService: Pedido recebido
+        deactivate SistemaRest
+        RestauranteService -> DB: registrarConfirmacao(pedidoId, timestamp)
+        RestauranteService --> PedidoService: Confirmação do restaurante
+        deactivate RestauranteService
+        PedidoService -> DB: atualizarStatus(pedidoId, "CONFIRMADO")
+        PedidoService --> Gateway: Pedido confirmado com sucesso
+        deactivate PedidoService
+        Gateway --> App: Sucesso (pedidoId, tempoEstimado)
+        deactivate Gateway
+        App -> App: enviarNotificacaoPush("Pedido confirmado!")
+        App --> Cliente: Exibe confirmação e tempo estimado
+        deactivate App
+        SistemaRest -> Cliente: Notificação: "Restaurante confirmou seu pedido"
+    end
+end
+@enduml</pre>
+    </div>
+
+    <footer>
+        <p>Gerado com PlantUML</p>
+    </footer>
+
+    <script>
+        const diagramas = {
+            cadastro: `@startuml
+actor Usuário
+participant "Interface Web" as UI
+participant "Controlador" as Controller
+participant "Serviço de Usuário" as Service
+participant "Validador" as Validator
+database "Banco de Dados" as DB
+
+Usuário -> UI: Preenche formulário de cadastro
+Usuário -> UI: Clica em "Cadastrar"
+UI -> Controller: enviarCadastro(dados)
+activate Controller
+Controller -> Validator: validarDados(dados)
+activate Validator
+
+alt Dados inválidos
+    Validator --> Controller: Erro de validação
+    Controller --> UI: Retorna mensagens de erro
+    UI --> Usuário: Exibe erros no formulário
+else Dados válidos
+    Validator --> Controller: Dados válidos
+    deactivate Validator
+    Controller -> Service: criarUsuario(dados)
+    activate Service
+    Service -> Service: criptografarSenha()
+    Service -> DB: verificarEmailExistente(email)
+    activate DB
+    
+    alt Email já existe
+        DB --> Service: Email encontrado
+        Service --> Controller: Erro: Email já cadastrado
+        Controller --> UI: Retorna erro
+        UI --> Usuário: Exibe mensagem de erro
+    else Email disponível
+        DB --> Service: Email disponível
+        Service -> DB: inserirUsuario(dados)
+        DB --> Service: Usuário criado com sucesso
+        deactivate DB
+        Service -> Service: enviarEmailConfirmacao()
+        Service --> Controller: Sucesso
+        deactivate Service
+        Controller --> UI: Cadastro realizado
+        deactivate Controller
+        UI --> Usuário: Exibe mensagem de sucesso
+    end
+end
+@enduml`,
+            
+            pedido: `@startuml
+actor Cliente
+participant "App Mobile" as App
+participant "API Gateway" as Gateway
+participant "Serviço de Pedidos" as PedidoService
+participant "Serviço de Pagamento" as PaymentService
+participant "Serviço de Restaurante" as RestauranteService
+database "Banco de Dados" as DB
+participant "Sistema do Restaurante" as SistemaRest
+
+Cliente -> App: Navega no cardápio
+Cliente -> App: Adiciona itens ao carrinho
+Cliente -> App: Finalizar pedido
+activate App
+App -> App: Validar carrinho
+App -> Gateway: solicitarPedido(dadosPedido)
+activate Gateway
+Gateway -> PedidoService: criarPedido(dadosPedido)
+activate PedidoService
+PedidoService -> DB: salvarPedido(pedido)
+activate DB
+DB --> PedidoService: Pedido salvo (ID)
+deactivate DB
+PedidoService -> RestauranteService: verificarDisponibilidade(restauranteId, itens)
+activate RestauranteService
+
+alt Restaurante fechado ou itens indisponíveis
+    RestauranteService --> PedidoService: Erro: Indisponível
+    PedidoService -> DB: atualizarStatus(pedidoId, "CANCELADO")
+    PedidoService --> Gateway: Erro: Pedido não disponível
+    Gateway --> App: Retorna erro
+    App --> Cliente: Exibe mensagem de erro
+else Restaurante disponível
+    RestauranteService --> PedidoService: Disponível
+    deactivate RestauranteService
+    PedidoService -> PaymentService: processarPagamento(pedidoId, valorTotal, metodoPagamento)
+    activate PaymentService
+    PaymentService -> PaymentService: Validar dados de pagamento
+    
+    alt Pagamento recusado
+        PaymentService --> PedidoService: Erro: Pagamento recusado
+        PedidoService -> DB: atualizarStatus(pedidoId, "PAGAMENTO_FALHOU")
+        PedidoService --> Gateway: Erro: Pagamento não autorizado
+        Gateway --> App: Retorna erro de pagamento
+        App --> Cliente: Exibe erro no pagamento
+    else Pagamento aprovado
+        PaymentService --> PedidoService: Pagamento confirmado (transacaoId)
+        deactivate PaymentService
+        PedidoService -> DB: atualizarStatus(pedidoId, "PAGO")
+        PedidoService -> RestauranteService: enviarPedidoRestaurante(pedidoId, detalhes)
+        activate RestauranteService
+        RestauranteService -> SistemaRest: notificarNovoPedido(pedido)
+        activate SistemaRest
+        SistemaRest --> RestauranteService: Pedido recebido
+        deactivate SistemaRest
+        RestauranteService -> DB: registrarConfirmacao(pedidoId, timestamp)
+        RestauranteService --> PedidoService: Confirmação do restaurante
+        deactivate RestauranteService
+        PedidoService -> DB: atualizarStatus(pedidoId, "CONFIRMADO")
+        PedidoService --> Gateway: Pedido confirmado com sucesso
+        deactivate PedidoService
+        Gateway --> App: Sucesso (pedidoId, tempoEstimado)
+        deactivate Gateway
+        App -> App: enviarNotificacaoPush("Pedido confirmado!")
+        App --> Cliente: Exibe confirmação e tempo estimado
+        deactivate App
+        SistemaRest -> Cliente: Notificação: "Restaurante confirmou seu pedido"
+    end
+end
+@enduml`
+        };
+
+        function showDiagram(tipo) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.diagram-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(tipo).classList.add('active');
+            
+            const img = document.getElementById(`diagram-${tipo}`);
+            if (!img.src) {
+                carregarDiagrama(tipo);
+            }
+        }
+
+        function carregarDiagrama(tipo) {
+            const img = document.getElementById(`diagram-${tipo}`);
+            const loading = document.getElementById(`loading-${tipo}`);
+            
+            img.src = `https://www.plantuml.com/plantuml/png/${encodeURIComponent(diagramas[tipo])}`;
+            
+            img.onload = function() {
+                loading.style.display = 'none';
+                img.style.display = 'block';
+            };
+            
+            img.onerror = function() {
+                loading.innerHTML = 'Erro ao carregar diagrama';
+            };
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            carregarDiagrama('cadastro');
+        });
+    </script>
+</body>
+</html>
